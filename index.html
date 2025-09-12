@@ -35,29 +35,29 @@
       }
 
       .param-info .tooltip {
-        visibility: hidden;
-        opacity: 0;
-        position: absolute; /* Changed from fixed to absolute */
-        z-index: 10000;
-        background: var(--surface-2, #1a1d29);
-        color: var(--text, #ffffff);
-        padding: 12px;
-        border-radius: 8px;
-        font-size: 12px;
-        font-weight: normal;
-        line-height: 1.4;
-        width: 280px; /* Increased width for better readability */
-        max-width: 90vw;
-        box-shadow: 0 8px 30px rgba(0, 0, 0, 0.6);
-        border: 1px solid var(--border, #374e84);
-        transition: opacity 0.2s ease-in-out; /* Removed visibility from transition */
-        pointer-events: none;
-        word-wrap: break-word;
+        visibility: hidden !important;
+        opacity: 0 !important;
+        position: fixed !important;
+        z-index: 10000 !important;
+        background: #1a1d29 !important;
+        color: #ffffff !important;
+        padding: 12px !important;
+        border-radius: 8px !important;
+        font-size: 12px !important;
+        font-weight: normal !important;
+        line-height: 1.4 !important;
+        width: 260px !important;
+        max-width: 90vw !important;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5) !important;
+        border: 1px solid #374e84 !important;
+        transition: opacity 0.3s, visibility 0.3s !important;
+        pointer-events: none !important;
+        word-wrap: break-word !important;
       }
 
       .param-info:hover .tooltip {
-        visibility: visible;
-        opacity: 1;
+        visibility: visible !important;
+        opacity: 1 !important;
       }
 
       .tooltip-title {
@@ -75,8 +75,8 @@
       }
 
       /* Remove horizontal scrollbar */
-      #controls {
-        overflow-x: hidden; /* Prevent horizontal scrollbar */
+      .controls {
+        overflow-x: hidden !important;
       }
 
       .learning-controls {
