@@ -61,12 +61,87 @@ class SNNVisualizer {
     this.bindUI();
     this.initLessons();
     this.initTooltips();
+    this.fixUIStyles(); // Add this line to fix the UI styles
 
     // Debug: Log network creation
     console.log(`Network initialized with ${this.neurons.length} neurons`);
 
     // Start animation immediately
     this.animate();
+  }
+
+  fixUIStyles() {
+    // Fix controls panel position
+    const controlsElement = document.getElementById("controls");
+    if (controlsElement) {
+      controlsElement.style.position = "fixed";
+      controlsElement.style.left = "16px";
+      controlsElement.style.top = "180px"; // Lower position to prevent overlap
+      controlsElement.style.zIndex = "5";
+      controlsElement.style.width = "320px";
+      controlsElement.style.maxHeight = "calc(100vh - 220px)";
+    }
+
+    // Fix sliders
+    const styleElement = document.createElement("style");
+    styleElement.textContent = `
+      input[type="range"] {
+        -webkit-appearance: none;
+        height: 6px;
+        background: #2a3245;
+        border-radius: 3px;
+        width: 100%;
+      }
+      
+      input[type="range"]::-webkit-slider-thumb {
+        -webkit-appearance: none;
+        height: 16px;
+        width: 16px;
+        border-radius: 8px;
+        background: #374E84;
+        cursor: pointer;
+      }
+      
+      .lesson-modal {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.85);
+        z-index: 1000;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 20px;
+        backdrop-filter: blur(8px);
+      }
+      
+      .lesson-modal-content {
+        background: #0a0a0a;
+        border: 1px solid #2a2a2a;
+        padding: 32px;
+        max-width: 800px;
+        max-height: 85vh;
+        overflow-y: auto;
+        color: #ffffff;
+        position: relative;
+        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.6);
+      }
+    `;
+    document.head.appendChild(styleElement);
+
+    // Fix lesson panel
+    const lessonPanel = document.getElementById("lessonPanel");
+    if (lessonPanel) {
+      lessonPanel.style.zIndex = "10";
+    }
+
+    // Fix navigation controls
+    const navControls = document.getElementById("navControls");
+    if (navControls) {
+      navControls.style.zIndex = "10";
+    }
   }
 
   initDOM() {
@@ -466,9 +541,20 @@ class SNNVisualizer {
   }
 
   render() {
+    // First check if neurons exist
+    if (!this.neurons || this.neurons.length === 0) {
+      console.error("No neurons available for rendering!");
+      // Force recreation of the network
+      this.createNetwork();
+      return;
+    }
+
     // Clear canvas with pure black background
     this.ctx.fillStyle = "#000000";
     this.ctx.fillRect(0, 0, this.dom.canvas.width, this.dom.canvas.height);
+
+    // Debug message to verify rendering is happening
+    console.log("Rendering network with " + this.neurons.length + " neurons");
 
     // Track which neurons have fired recently for cluster visualization
     const now = Date.now();
@@ -915,677 +1001,27 @@ class SNNVisualizer {
     const lesson = lessons[lessonNumber];
     if (lesson && this.dom.lessonContent) {
       this.dom.lessonContent.innerHTML = `
-        <div class="lesson">
-          <strong>${lesson.title}</strong><br />
-          ${lesson.content}
-          <button class="btn" style="margin-top: 8px; padding: 6px 12px; font-size: 12px;" onclick="window.snnVisualizer.showFullLesson(${lessonNumber})">View Full Lesson</button>
-        </div>
-      `;
-    }
-  }
-
-  initTooltips() {
-    const tooltips = document.querySelectorAll(".param-info");
-
-    tooltips.forEach((info) => {
-      const tooltip = info.querySelector(".tooltip");
-
-      info.addEventListener("mouseenter", (e) => {
-        const rect = info.getBoundingClientRect();
-        const tooltipRect = tooltip.getBoundingClientRect();
-
-        // Calculate position
-        let left = rect.left + rect.width / 2 - 280 / 2; // Center horizontally
-        let top = rect.top - tooltipRect.height - 10; // Position above with gap
-
-        // Boundary checks
-        const padding = 16;
-
-        // Check left boundary
-        if (left < padding) {
-          left = padding;
-        }
-
-        // Check right boundary
-        if (left + 280 > window.innerWidth - padding) {
-          left = window.innerWidth - 280 - padding;
-        }
-
-        // Check top boundary - if tooltip would go above viewport, show below
-        if (top < padding) {
-          top = rect.bottom + 10;
-        }
-
-        // Check bottom boundary - if still doesn't fit, position at top with scroll
-        if (top + tooltipRect.height > window.innerHeight - padding) {
-          top = padding;
-        }
-
-        // Apply positioning
-        tooltip.style.left = `${left}px`;
-        tooltip.style.top = `${top}px`;
-      });
-
-      // Optional: Add arrow pointing to the info icon
-      info.addEventListener("mouseleave", () => {
-        // Reset any custom positioning if needed
-      });
-    });
-  }
-
-  async showFullLesson(lessonNumber) {
-    const lessons = {
-      1: { title: "Basic Spike Dynamics", file: "lessons/lesson1.html" },
-      2: { title: "Synaptic Transmission", file: "lessons/lesson2.html" },
-      3: { title: "Network Plasticity", file: "lessons/lesson3.html" },
-      4: { title: "Pattern Recognition", file: "lessons/lesson4.html" },
-      5: { title: "Network Topology", file: "lessons/lesson5.html" },
-      6: { title: "Inhibition & Competition", file: "lessons/lesson6.html" },
-      7: { title: "Multi-layer Processing", file: "lessons/lesson7.html" },
-      8: { title: "Memory Systems", file: "lessons/lesson8.html" },
-      9: { title: "Large-Scale Networks", file: "lessons/lesson9.html" },
-      10: { title: "Neural Oscillations", file: "lessons/lesson10.html" },
-      11: { title: "Brain Emulation Theory", file: "lessons/lesson11.html" },
-      12: { title: "Ethics & Future", file: "lessons/lesson12.html" },
-    };
-
-    const lesson = lessons[lessonNumber];
-    if (!lesson) return;
-
-    try {
-      console.log(`Loading lesson ${lessonNumber} from ${lesson.file}`);
-      const response = await fetch(lesson.file);
-
-      if (!response.ok) {
-        throw new Error(`HTTP ${response.status}: ${response.statusText}`);
-      }
-
-      const htmlContent = await response.text();
-      console.log(`Lesson ${lessonNumber} HTML content loaded successfully`);
-
-      // Create modal
-      const modal = document.createElement("div");
-      modal.className = "lesson-modal";
-
-      const modalContent = document.createElement("div");
-      modalContent.className = "lesson-modal-content";
-
-      // Directly use the loaded HTML file content
-      modalContent.innerHTML = `
-      <button class="close-btn">&times;</button>
-      ${htmlContent}
-      <div style="margin-top: 24px; padding-top: 16px; border-top: 1px solid #1e293b;">
-        <button class="btn" onclick="this.closest('.lesson-modal').remove()">CLOSE LESSON</button>
+      <div class="lesson">
+        <strong>${lesson.title}</strong><br />
+        ${lesson.content}
+        <button class="btn" style="margin-top: 8px; padding: 6px 12px; font-size: 12px;" onclick="window.snnVisualizer.showFullLesson(${lessonNumber})">View Full Lesson</button>
       </div>
     `;
-
-      modal.appendChild(modalContent);
-      document.body.appendChild(modal);
-
-      // Close modal functionality
-      const closeBtn = modalContent.querySelector(".close-btn");
-      const closeModal = () => {
-        if (document.body.contains(modal)) {
-          document.body.removeChild(modal);
-        }
-      };
-
-      closeBtn.addEventListener("click", closeModal);
-      modal.addEventListener("click", (e) => {
-        if (e.target === modal) closeModal();
-      });
-
-      // Close on escape key
-      const handleKeydown = (e) => {
-        if (e.key === "Escape") {
-          closeModal();
-          document.removeEventListener("keydown", handleKeydown);
-        }
-      };
-      document.addEventListener("keydown", handleKeydown);
-    } catch (error) {
-      console.error("Failed to load lesson:", error);
-
-      // Show fallback content if file loading fails
-      const modal = document.createElement("div");
-      modal.className = "lesson-modal";
-
-      const modalContent = document.createElement("div");
-      modalContent.className = "lesson-modal-content";
-      modalContent.innerHTML = `
-      <button class="close-btn">&times;</button>
-      <h1>${lesson.title.toUpperCase()}</h1>
-      <p style="color: #fbbf24; margin-bottom: 16px;">
-        <strong>Note:</strong> Lesson file could not be loaded. Here's the basic content:
-      </p>
-      ${this.getFallbackContent(lessonNumber)}
-      <div style="margin-top: 24px; padding-top: 16px; border-top: 1px solid #1e293b;">
-        <button class="btn" onclick="this.closest('.lesson-modal').remove()">CLOSE LESSON</button>
-      </div>
-    `;
-
-      modal.appendChild(modalContent);
-      document.body.appendChild(modal);
-
-      // Close functionality for fallback
-      const closeBtn = modalContent.querySelector(".close-btn");
-      closeBtn.addEventListener("click", () => {
-        if (document.body.contains(modal)) {
-          document.body.removeChild(modal);
-        }
-      });
-    }
-  }
-
-  getFallbackContent(lessonNumber) {
-    const fallbackContent = {
-      1: `
-        <h2>Basic Spike Dynamics</h2>
-        <p>Spiking Neural Networks use discrete spikes to communicate information. Key concepts include:</p>
-        <ul>
-          <li><strong>Membrane Potential:</strong> Voltage that accumulates over time</li>
-          <li><strong>Threshold:</strong> Critical level that triggers spike firing</li>
-          <li><strong>Spike:</strong> Brief electrical pulse sent to connected neurons</li>
-          <li><strong>Reset:</strong> Return to baseline voltage after firing</li>
-        </ul>
-        <p>Experiment with the network parameters to see how these dynamics affect spike propagation!</p>
-      `,
-      2: `
-        <h2>Synaptic Transmission</h2>
-        <p>Spikes travel through synaptic connections between neurons:</p>
-        <ul>
-          <li><strong>Synapses:</strong> Connections visible as grey lines</li>
-          <li><strong>Weights:</strong> Connection strength affecting signal transmission</li>
-          <li><strong>Propagation:</strong> How spikes spread through the network</li>
-          <li><strong>Clustering:</strong> Groups of neurons that fire together</li>
-        </ul>
-        <p>Enable "Show Weights" to see detailed connection information for each neuron.</p>
-      `,
-      3: `
-        <h2>Network Plasticity</h2>
-        <p>Networks adapt and learn through connection modifications:</p>
-        <ul>
-          <li><strong>Hebbian Learning:</strong> "Neurons that fire together, wire together"</li>
-          <li><strong>Strengthening:</strong> Frequently used connections become stronger</li>
-          <li><strong>Weakening:</strong> Unused connections fade over time</li>
-          <li><strong>Homeostasis:</strong> Balance between stability and adaptability</li>
-        </ul>
-        <p>Watch how network patterns evolve as neurons interact over time.</p>
-      `,
-      4: `
-        <h2>Pattern Recognition</h2>
-        <p>SNNs excel at temporal pattern detection:</p>
-        <ul>
-          <li><strong>Temporal Coding:</strong> Information in spike timing</li>
-          <li><strong>Feature Detection:</strong> Specialized neural responses</li>
-          <li><strong>Competition:</strong> Winner-take-all mechanisms</li>
-          <li><strong>Real-time Processing:</strong> Event-driven computation</li>
-        </ul>
-        <p>Use "Inject Spike" to trigger patterns and observe how they propagate through different clusters.</p>
-      `,
-      5: `
-        <h2>Network Topology</h2>
-        <p>Brain-like networks have specific organizational principles:</p>
-        <ul>
-          <li><strong>Small-World Properties:</strong> High clustering with short path lengths</li>
-          <li><strong>Modularity:</strong> Groups of densely connected neurons</li>
-          <li><strong>Hub Nodes:</strong> Highly connected neurons that integrate information</li>
-          <li><strong>Hierarchical Structure:</strong> Multiple scales of organization</li>
-        </ul>
-        <p>Observe how cluster formation affects information flow and processing efficiency.</p>
-      `,
-      6: `
-        <h2>Inhibition and Competition</h2>
-        <p>Inhibitory mechanisms create selection and decision-making:</p>
-        <ul>
-          <li><strong>Lateral Inhibition:</strong> Neighboring neurons suppress each other</li>
-          <li><strong>Winner-Take-All:</strong> Only the strongest signals survive</li>
-          <li><strong>E/I Balance:</strong> Critical ratio of excitation to inhibition</li>
-          <li><strong>Attention Mechanisms:</strong> Selecting relevant information</li>
-        </ul>
-        <p>Experiment with thresholds to see how they affect competitive dynamics.</p>
-      `,
-      7: `
-        <h2>Multi-layer Processing</h2>
-        <p>Hierarchical networks extract increasingly complex features:</p>
-        <ul>
-          <li><strong>Feature Hierarchy:</strong> Simple to complex pattern detection</li>
-          <li><strong>Cortical Columns:</strong> Functional processing units</li>
-          <li><strong>Feed-forward/Feedback:</strong> Bottom-up and top-down processing</li>
-          <li><strong>Abstraction Levels:</strong> From pixels to concepts</li>
-        </ul>
-        <p>This lesson demonstrates hierarchical processing principles.</p>
-      `,
-      8: `
-        <h2>Memory Systems</h2>
-        <p>Different memory types emerge from distinct network architectures:</p>
-        <ul>
-          <li><strong>Working Memory:</strong> Temporary storage through persistent activity</li>
-          <li><strong>Long-term Memory:</strong> Stable patterns through synaptic changes</li>
-          <li><strong>Episodic Memory:</strong> Time-linked event sequences</li>
-          <li><strong>Associative Memory:</strong> Pattern completion and recall</li>
-        </ul>
-        <p>Observe how persistent activity creates memory-like behavior.</p>
-      `,
-      9: `
-        <h2>Large-Scale Networks</h2>
-        <p>Brain-wide coordination enables higher-order functions:</p>
-        <ul>
-          <li><strong>Global Workspace:</strong> Conscious access through global broadcasting</li>
-          <li><strong>Default Mode Network:</strong> Resting state activity patterns</li>
-          <li><strong>Information Integration:</strong> Binding distributed processing</li>
-          <li><strong>Criticality:</strong> Balanced dynamics at phase transitions</li>
-        </ul>
-        <p>Watch how activity spreads across the entire network.</p>
-      `,
-      10: `
-        <h2>Neural Oscillations</h2>
-        <p>Rhythmic activity coordinates brain-wide processing:</p>
-        <ul>
-          <li><strong>Gamma Rhythms:</strong> Local processing and attention</li>
-          <li><strong>Alpha/Beta Rhythms:</strong> Communication between regions</li>
-          <li><strong>Theta Rhythms:</strong> Memory formation and navigation</li>
-          <li><strong>Phase Coupling:</strong> Temporal coordination mechanisms</li>
-        </ul>
-        <p>Observe rhythmic patterns in the voltage traces.</p>
-      `,
-      11: `
-        <h2>Brain Emulation Theory</h2>
-        <p>The ultimate goal of computational neuroscience:</p>
-        <ul>
-          <li><strong>Whole Brain Emulation:</strong> Complete functional brain copies</li>
-          <li><strong>Scanning Technology:</strong> Mapping every neuron and connection</li>
-          <li><strong>Computational Requirements:</strong> Massive processing and storage needs</li>
-          <li><strong>Technical Challenges:</strong> Scale, speed, and biological accuracy</li>
-        </ul>
-        <p>Understanding these fundamentals prepares us for the challenges ahead.</p>
-      `,
-      12: `
-        <h2>Ethics and Future Implications</h2>
-        <p>Digital minds raise profound philosophical questions:</p>
-        <ul>
-          <li><strong>Consciousness:</strong> Would digital minds be conscious?</li>
-          <li><strong>Identity:</strong> What makes you "you" in digital form?</li>
-          <li><strong>Rights:</strong> What protections do digital minds deserve?</li>
-          <li><strong>Responsibility:</strong> Our duty as creators of digital minds</li>
-        </ul>
-        <p>These questions require careful consideration as we advance the technology.</p>
-      `,
-    };
-
-    return (
-      fallbackContent[lessonNumber] || "<p>Lesson content not available.</p>"
-    );
-  }
-
-  createNetwork() {
-    this.neurons = [];
-    this.connections = [];
-
-    // Create neurons in 3D space with cluster-specific positioning
-    const radius = 350; // Increased from 200 to 350 for more spacing within clusters
-    const clusterSeparation = 300; // Increased from 150 to 300 for more distance between clusters
-
-    for (let i = 0; i < this.config.networkSize; i++) {
-      const clusterId = Math.floor(i / (this.config.networkSize / 4));
-      const colors =
-        this.CLUSTER_COLORS[clusterId % this.CLUSTER_COLORS.length];
-
-      // Position clusters in different areas of 3D space
-      const clusterCenterX =
-        (clusterId % 2) * clusterSeparation - clusterSeparation / 2;
-      const clusterCenterY =
-        Math.floor(clusterId / 2) * clusterSeparation - clusterSeparation / 2;
-      const clusterCenterZ = 0;
-
-      const neuron = {
-        id: i,
-        position: {
-          x: clusterCenterX + (Math.random() - 0.5) * radius,
-          y: clusterCenterY + (Math.random() - 0.5) * radius,
-          z: clusterCenterZ + (Math.random() - 0.5) * radius,
-        },
-        voltage: Math.random() * 0.3, // Start with lower voltage
-        pulse: 0,
-        lastFire: 0,
-        colors: colors,
-        connections: [],
-        clusterId: clusterId, // Store cluster ID for easier access
-      };
-
-      this.neurons.push(neuron);
-    }
-
-    // Create connections with cluster bias
-    for (let i = 0; i < this.neurons.length; i++) {
-      for (let j = i + 1; j < this.neurons.length; j++) {
-        const sameCluster =
-          this.neurons[i].clusterId === this.neurons[j].clusterId;
-        // Higher probability within cluster, lower between clusters
-        const connectionProb = sameCluster
-          ? this.config.connectionProb * 2.5
-          : this.config.connectionProb * 0.3;
-
-        if (Math.random() < connectionProb) {
-          const connection = {
-            from: this.neurons[i],
-            to: this.neurons[j],
-            weight: sameCluster
-              ? 0.4 + Math.random() * 0.6 // Stronger within cluster: 0.4-1.0
-              : 0.1 + Math.random() * 0.3, // Weaker between clusters: 0.1-0.4
-          };
-          this.connections.push(connection);
-          this.neurons[i].connections.push(connection);
-
-          // Also create reverse connection for bidirectional
-          const reverseConnection = {
-            from: this.neurons[j],
-            to: this.neurons[i],
-            weight: sameCluster
-              ? 0.4 + Math.random() * 0.6
-              : 0.1 + Math.random() * 0.3,
-          };
-          this.connections.push(reverseConnection);
-          this.neurons[j].connections.push(reverseConnection);
-        }
+      // Make sure the info container is visible with correct styling
+      const infoElement = document.getElementById("info");
+      if (infoElement) {
+        infoElement.style.display = "block";
+        infoElement.style.position = "fixed";
+        infoElement.style.right = "16px";
+        infoElement.style.bottom = "16px";
+        infoElement.style.maxWidth = "400px";
+        infoElement.style.zIndex = "100";
+        infoElement.style.background = "#181b22";
+        infoElement.style.border = "1px solid #374E84";
+        infoElement.style.backdropFilter = "blur(12px)";
+        infoElement.style.boxShadow = "0 4px 20px rgba(0, 0, 0, 0.4)";
+        infoElement.style.padding = "20px";
       }
-    }
-
-    // Start with only ONE cluster being active to demonstrate async behavior
-    const activeCluster = Math.floor(Math.random() * 4);
-    for (let i = 0; i < 3; i++) {
-      // Only fire 3 neurons in one cluster
-      const neuronsInCluster = this.neurons.filter(
-        (n) => n.clusterId === activeCluster
-      );
-      if (neuronsInCluster.length > 0) {
-        const randomNeuron =
-          neuronsInCluster[Math.floor(Math.random() * neuronsInCluster.length)];
-        randomNeuron.voltage = this.state.threshold + 0.1;
-      }
-    }
-  }
-
-  updateNetwork() {
-    if (this.state.pauseSpikes) return;
-
-    // Process each neuron
-    this.neurons.forEach((neuron) => {
-      // Check if neuron should fire due to accumulated voltage FIRST
-      if (neuron.voltage >= this.state.threshold) {
-        // Direct implementation of firing without calling method to ensure it works
-        neuron.pulse = this.config.pulseIntensity;
-        neuron.voltage = 0; // Reset voltage to 0
-        neuron.lastFire = Date.now();
-
-        // Propagate to connected neurons
-        neuron.connections.forEach((conn) => {
-          conn.to.voltage += conn.weight;
-        });
-
-        // Force immediate update for connected neurons that might now be above threshold
-        neuron.connections.forEach((conn) => {
-          if (conn.to.voltage >= this.state.threshold) {
-            conn.to.pulse = this.config.pulseIntensity;
-            conn.to.voltage = 0;
-            conn.to.lastFire = Date.now();
-          }
-        });
-        return;
-      }
-
-      // Random firing - much lower probability and cluster-specific
-      const clusterBasedRate =
-        this.state.firingRate *
-        this.state.speed *
-        (1 + Math.sin(Date.now() * 0.001 + neuron.clusterId * 1.5) * 0.5); // Async cluster activity
-
-      if (Math.random() < clusterBasedRate) {
-        neuron.pulse = this.config.pulseIntensity;
-        neuron.voltage = 0;
-        neuron.lastFire = Date.now();
-
-        // Propagate to connected neurons
-        neuron.connections.forEach((conn) => {
-          conn.to.voltage += conn.weight;
-        });
-        return;
-      }
-
-      // Pulse decay
-      if (neuron.pulse > 0.01) {
-        neuron.pulse *= this.state.pulseDecay;
-      } else {
-        neuron.pulse = 0;
-      }
-
-      // Voltage decay - slower to allow buildup
-      neuron.voltage *= 0.998;
-
-      // Much reduced random voltage increase - cluster specific timing
-      if (Math.random() < 0.002 * this.state.speed) {
-        neuron.voltage += Math.random() * 0.05; // Much smaller increments
-      }
-    });
-
-    // Update voltage display for selected neuron
-    if (this.state.selectedNeuron && this.dom.voltageValue) {
-      this.dom.voltageValue.textContent =
-        this.state.selectedNeuron.voltage.toFixed(3);
-      this.updateTrace();
-    }
-  }
-
-  fireNeuron(neuron) {
-    // Set pulse and timestamp
-    neuron.pulse = this.config.pulseIntensity;
-    neuron.voltage = 0; // Reset to 0 after firing
-    neuron.lastFire = Date.now();
-
-    // Propagate to connected neurons with stronger effect
-    neuron.connections.forEach((conn) => {
-      // Add a multiplier to make sure connections have more effect
-      conn.to.voltage += conn.weight * 1.2;
-
-      // Debug log for voltage propagation
-      console.log(
-        `Neuron ${neuron.id} fired, voltage ${
-          conn.weight * 1.2
-        } sent to neuron ${conn.to.id}`
-      );
-    });
-  }
-
-  updateTrace() {
-    if (!this.traceCtx || !this.state.selectedNeuron) return;
-
-    this.voltageHistory.push(this.state.selectedNeuron.voltage);
-    if (this.voltageHistory.length > 260) {
-      this.voltageHistory.shift();
-    }
-
-    this.clearTrace();
-
-    // Draw background grid
-    this.traceCtx.strokeStyle = "#333333";
-    this.traceCtx.lineWidth = 0.5;
-    this.traceCtx.setLineDash([2, 2]);
-
-    // Horizontal grid lines
-    for (let i = 0; i <= 4; i++) {
-      const y = (150 * i) / 4;
-      this.traceCtx.beginPath();
-      this.traceCtx.moveTo(0, y);
-      this.traceCtx.lineTo(260, y);
-      this.traceCtx.stroke();
-    }
-
-    // Vertical grid lines
-    for (let i = 0; i <= 8; i++) {
-      const x = (260 * i) / 8;
-      this.traceCtx.beginPath();
-      this.traceCtx.moveTo(x, 0);
-      this.traceCtx.lineTo(x, 150);
-      this.traceCtx.stroke();
-    }
-    this.traceCtx.setLineDash([]);
-
-    // Draw voltage trace with clean white - corrected direction
-    this.traceCtx.strokeStyle = "#00ff88";
-    this.traceCtx.lineWidth = 2;
-    this.traceCtx.beginPath();
-
-    this.voltageHistory.forEach((voltage, i) => {
-      const x = i;
-      const y = 150 - (voltage / (this.state.threshold * 1.2)) * 150; // Inverted so spikes go up
-
-      if (i === 0) {
-        this.traceCtx.moveTo(x, y);
-      } else {
-        this.traceCtx.lineTo(x, y);
-      }
-    });
-
-    this.traceCtx.stroke();
-
-    // Draw threshold line with bright red
-    this.traceCtx.strokeStyle = "#ff4444";
-    this.traceCtx.lineWidth = 2;
-    this.traceCtx.setLineDash([5, 5]);
-    const thresholdY =
-      150 - (this.state.threshold / (this.state.threshold * 1.2)) * 150;
-    this.traceCtx.beginPath();
-    this.traceCtx.moveTo(0, thresholdY);
-    this.traceCtx.lineTo(260, thresholdY);
-    this.traceCtx.stroke();
-    this.traceCtx.setLineDash([]);
-
-    // Add voltage scale labels
-    this.traceCtx.fillStyle = "#cccccc";
-    this.traceCtx.font = "10px Inter, monospace";
-    this.traceCtx.textAlign = "right";
-
-    // Y-axis labels (voltage values)
-    const maxVoltage = this.state.threshold * 1.2;
-    for (let i = 0; i <= 4; i++) {
-      const voltage = (maxVoltage * (4 - i)) / 4;
-      const y = (150 * i) / 4;
-      this.traceCtx.fillText(voltage.toFixed(1), 25, y + 3);
-    }
-
-    // Add axis labels
-    this.traceCtx.textAlign = "left";
-    this.traceCtx.fillStyle = "#888888";
-    this.traceCtx.font = "9px Inter, sans-serif";
-    this.traceCtx.fillText("Voltage (V)", 5, 12);
-    this.traceCtx.fillText("Time →", 200, 145);
-
-    // Add threshold label
-    this.traceCtx.fillStyle = "#ff4444";
-    this.traceCtx.fillText("Threshold", 180, thresholdY - 5);
-  }
-
-  clearTrace() {
-    if (!this.traceCtx) return;
-    this.traceCtx.fillStyle = "#000000";
-    this.traceCtx.fillRect(0, 0, 260, 150);
-  }
-
-  initLessons() {
-    if (this.dom.lessonSelect) {
-      this.dom.lessonSelect.addEventListener("change", (e) => {
-        this.updateLesson(parseInt(e.target.value));
-      });
-    }
-
-    this.updateLesson(1);
-  }
-
-  updateLesson(lessonNumber) {
-    const lessons = {
-      1: {
-        title: "Lesson 1: Basic Spikes",
-        content:
-          "Each neuron accumulates voltage over time. When it reaches threshold (v≥1), it fires a spike and resets to 0.",
-        file: "lessons/lesson1.html",
-      },
-      2: {
-        title: "Lesson 2: Synaptic Transmission",
-        content:
-          "Spikes travel along synapses (connections) between neurons, with varying weights affecting signal strength.",
-        file: "lessons/lesson2.html",
-      },
-      3: {
-        title: "Lesson 3: Network Plasticity",
-        content:
-          "Synaptic weights can change over time based on neural activity, enabling learning and adaptation.",
-        file: "lessons/lesson3.html",
-      },
-      4: {
-        title: "Lesson 4: Pattern Recognition",
-        content:
-          "SNNs can learn to recognize temporal patterns in spike trains, making them ideal for processing time-series data.",
-        file: "lessons/lesson4.html",
-      },
-      5: {
-        title: "Lesson 5: Network Topology",
-        content:
-          "Brain-like networks organize into clusters and modules, creating small-world properties that optimize both local processing and global communication.",
-        file: "lessons/lesson5.html",
-      },
-      6: {
-        title: "Lesson 6: Inhibition & Competition",
-        content:
-          "Inhibitory connections create competitive dynamics, enabling winner-take-all mechanisms crucial for attention and decision-making.",
-        file: "lessons/lesson6.html",
-      },
-      7: {
-        title: "Lesson 7: Multi-layer Processing",
-        content:
-          "Hierarchical networks extract increasingly complex features, similar to cortical organization in biological brains.",
-        file: "lessons/lesson7.html",
-      },
-      8: {
-        title: "Lesson 8: Memory Systems",
-        content:
-          "Different types of memory (working, long-term, episodic) emerge from distinct network architectures and plasticity rules.",
-        file: "lessons/lesson8.html",
-      },
-      9: {
-        title: "Lesson 9: Large-Scale Networks",
-        content:
-          "Brain-wide networks coordinate information integration, giving rise to global workspace dynamics and potentially consciousness.",
-        file: "lessons/lesson9.html",
-      },
-      10: {
-        title: "Lesson 10: Neural Oscillations",
-        content:
-          "Rhythmic neural activity coordinates processing across brain regions, enabling binding and temporal organization of information.",
-        file: "lessons/lesson10.html",
-      },
-      11: {
-        title: "Lesson 11: Brain Emulation Theory",
-        content:
-          "Whole brain emulation aims to create functional copies of specific brains, requiring advances in scanning, modeling, and computing.",
-        file: "lessons/lesson11.html",
-      },
-      12: {
-        title: "Lesson 12: Ethics & Future",
-        content:
-          "Digital minds raise profound questions about consciousness, identity, rights, and humanity's future that we must address responsibly.",
-        file: "lessons/lesson12.html",
-      },
-    };
-
-    const lesson = lessons[lessonNumber];
-    if (lesson && this.dom.lessonContent) {
-      this.dom.lessonContent.innerHTML = `
-        <div class="lesson">
-          <strong>${lesson.title}</strong><br />
-          ${lesson.content}
-          <button class="btn" style="margin-top: 8px; padding: 6px 12px; font-size: 12px;" onclick="window.snnVisualizer.showFullLesson(${lessonNumber})">View Full Lesson</button>
-        </div>
-      `;
     }
   }
 
@@ -1601,6 +1037,7 @@ class SNNVisualizer {
     // Create modal
     const modal = document.createElement("div");
     modal.className = "lesson-modal";
+    modal.style.zIndex = "1000"; // Ensure it's on top
 
     const modalContent = document.createElement("div");
     modalContent.className = "lesson-modal-content";
@@ -1617,6 +1054,56 @@ class SNNVisualizer {
     modal.appendChild(modalContent);
     document.body.appendChild(modal);
 
+    // Add modal styles if they're missing
+    if (!document.querySelector("style#modal-styles")) {
+      const style = document.createElement("style");
+      style.id = "modal-styles";
+      style.textContent = `
+        .lesson-modal {
+          position: fixed;
+          top: 0;
+          left: 0;
+          width: 100%;
+          height: 100%;
+          background: rgba(0, 0, 0, 0.85);
+          z-index: 1000;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          padding: 20px;
+          backdrop-filter: blur(8px);
+        }
+        .lesson-modal-content {
+          background: #0a0a0a;
+          border: 1px solid #2a2a2a;
+          padding: 32px;
+          max-width: 800px;
+          max-height: 85vh;
+          overflow-y: auto;
+          color: #ffffff;
+          position: relative;
+          box-shadow: 0 8px 32px rgba(0, 0, 0, 0.6);
+        }
+        .close-btn {
+          position: absolute;
+          top: 20px;
+          right: 20px;
+          background: #151515;
+          border: 1px solid #2a2a2a;
+          color: #808080;
+          font-size: 18px;
+          width: 36px;
+          height: 36px;
+          cursor: pointer;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          font-weight: bold;
+        }
+      `;
+      document.head.appendChild(style);
+    }
+
     // Close modal functionality
     const closeBtn = modalContent.querySelector(".close-btn");
     const closeModal = () => {
@@ -1631,13 +1118,9 @@ class SNNVisualizer {
     });
 
     // Close on escape key
-    const handleKeydown = (e) => {
-      if (e.key === "Escape") {
-        closeModal();
-        document.removeEventListener("keydown", handleKeydown);
-      }
-    };
-    document.addEventListener("keydown", handleKeydown);
+    document.addEventListener("keydown", (e) => {
+      if (e.key === "Escape") closeModal();
+    });
   }
 
   getFullLessonContent(lessonNumber) {
@@ -1871,59 +1354,6 @@ class SNNVisualizer {
     };
 
     return lessons[lessonNumber] || null;
-  }
-
-  getFallbackContent(lessonNumber) {
-    const fallbackContent = {
-      1: `
-        <h2>Basic Spike Dynamics</h2>
-        <p>Spiking Neural Networks use discrete spikes to communicate information. Key concepts include:</p>
-        <ul>
-          <li><strong>Membrane Potential:</strong> Voltage that accumulates over time</li>
-          <li><strong>Threshold:</strong> Critical level that triggers spike firing</li>
-          <li><strong>Spike:</strong> Brief electrical pulse sent to connected neurons</li>
-          <li><strong>Reset:</strong> Return to baseline voltage after firing</li>
-        </ul>
-        <p>Experiment with the network parameters to see how these dynamics affect spike propagation!</p>
-      `,
-      2: `
-        <h2>Synaptic Transmission</h2>
-        <p>Spikes travel through synaptic connections between neurons:</p>
-        <ul>
-          <li><strong>Synapses:</strong> Connections visible as grey lines</li>
-          <li><strong>Weights:</strong> Connection strength affecting signal transmission</li>
-          <li><strong>Propagation:</strong> How spikes spread through the network</li>
-          <li><strong>Clustering:</strong> Groups of neurons that fire together</li>
-        </ul>
-        <p>Enable "Show Weights" to see detailed connection information for each neuron.</p>
-      `,
-      3: `
-        <h2>Network Plasticity</h2>
-        <p>Networks adapt and learn through connection modifications:</p>
-        <ul>
-          <li><strong>Hebbian Learning:</strong> "Neurons that fire together, wire together"</li>
-          <li><strong>Strengthening:</strong> Frequently used connections become stronger</li>
-          <li><strong>Weakening:</strong> Unused connections fade over time</li>
-          <li><strong>Homeostasis:</strong> Balance between stability and adaptability</li>
-        </ul>
-        <p>Watch how network patterns evolve as neurons interact over time.</p>
-      `,
-      4: `
-        <h2>Pattern Recognition</h2>
-        <p>SNNs excel at temporal pattern detection:</p>
-        <ul>
-          <li><strong>Temporal Coding:</strong> Information in spike timing</li>
-          <li><strong>Feature Detection:</strong> Specialized neural responses</li>
-          <li><strong>Competition:</strong> Winner-take-all mechanisms</li>
-          <li><strong>Real-time Processing:</strong> Event-driven computation</li>
-        </ul>
-        <p>Use "Inject Spike" to trigger patterns and observe how they propagate through different clusters.</p>
-      `,
-    };
-
-    return (
-      fallbackContent[lessonNumber] || "<p>Lesson content not available.</p>"
-    );
   }
 
   animate() {

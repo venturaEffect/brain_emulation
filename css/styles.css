@@ -163,16 +163,17 @@ canvas {
 #controls {
   position: fixed;
   left: 16px;
-  top: 80px;
+  top: 180px; /* Adjusted from 80px to prevent overlap */
   width: 320px;
   background: var(--surface-1);
   border: 1px solid var(--border);
   padding: 20px;
   backdrop-filter: blur(12px);
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
-  max-height: calc(100vh - 120px);
-  overflow: visible; /* Changed from auto to visible */
+  max-height: calc(100vh - 220px);
+  overflow: visible;
   box-sizing: border-box;
+  z-index: 5;
 }
 
 .control-group {
@@ -493,4 +494,22 @@ body {
 
 #three-canvas:active {
   cursor: grabbing;
+}
+
+/* Fix slider styles */
+input[type="range"] {
+  -webkit-appearance: none;
+  height: 6px;
+  background: var(--surface-3);
+  border-radius: 3px;
+  width: 100%;
+}
+
+input[type="range"]::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  height: 16px;
+  width: 16px;
+  border-radius: 8px;
+  background: var(--accent-primary);
+  cursor: pointer;
 }
