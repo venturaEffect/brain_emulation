@@ -925,38 +925,51 @@ class SNNVisualizer {
   }
 
   initTooltips() {
-    // Initialize tooltip positioning system
-    const tooltipInfos = document.querySelectorAll(".param-info");
+    const tooltips = document.querySelectorAll(".param-info");
 
-    tooltipInfos.forEach((info) => {
+    tooltips.forEach((info) => {
       const tooltip = info.querySelector(".tooltip");
 
-      if (tooltip) {
-        info.addEventListener("mouseenter", (e) => {
-          const rect = info.getBoundingClientRect();
-          const tooltipRect = tooltip.getBoundingClientRect();
+      info.addEventListener("mouseenter", (e) => {
+        const rect = info.getBoundingClientRect();
+        const tooltipRect = tooltip.getBoundingClientRect();
 
-          // Position tooltip to the left of the info icon
-          let left = rect.left - 270; // Tooltip width + margin
-          let top = rect.top - 10;
+        // Calculate position
+        let left = rect.left + rect.width / 2 - 280 / 2; // Center horizontally
+        let top = rect.top - tooltipRect.height - 10; // Position above with gap
 
-          // Ensure tooltip stays within viewport
-          if (left < 10) {
-            left = rect.right + 10; // Position to the right instead
-          }
+        // Boundary checks
+        const padding = 16;
 
-          if (top < 10) {
-            top = 10;
-          }
+        // Check left boundary
+        if (left < padding) {
+          left = padding;
+        }
 
-          if (top + 200 > window.innerHeight) {
-            top = window.innerHeight - 210;
-          }
+        // Check right boundary
+        if (left + 280 > window.innerWidth - padding) {
+          left = window.innerWidth - 280 - padding;
+        }
 
-          tooltip.style.left = left + "px";
-          tooltip.style.top = top + "px";
-        });
-      }
+        // Check top boundary - if tooltip would go above viewport, show below
+        if (top < padding) {
+          top = rect.bottom + 10;
+        }
+
+        // Check bottom boundary - if still doesn't fit, position at top with scroll
+        if (top + tooltipRect.height > window.innerHeight - padding) {
+          top = padding;
+        }
+
+        // Apply positioning
+        tooltip.style.left = `${left}px`;
+        tooltip.style.top = `${top}px`;
+      });
+
+      // Optional: Add arrow pointing to the info icon
+      info.addEventListener("mouseleave", () => {
+        // Reset any custom positioning if needed
+      });
     });
   }
 
@@ -1704,7 +1717,7 @@ class SNNVisualizer {
         <p>The timing between pre- and post-synaptic spikes determines whether connections strengthen or weaken, enabling learning of temporal sequences.</p>
         
         <h3 style="color: #ff9bf0; margin-top: 24px;">Feature Detection</h3>
-        <p>Specialized neurons can learn to respond to specific temporal patterns, acting as feature detectors for complex spatiotemporal inputs.</p>
+               <p>Specialized neurons can learn to respond to specific temporal patterns, acting as feature detectors for complex spatiotemporal inputs.</p>
         
         <h2 style="color: #ff9bf0; font-size: 22px; margin-top: 24px; margin-bottom: 12px;">Competition and Selection</h2>
         <p>Winner-take-all mechanisms ensure that only the most relevant patterns survive, creating selective responses to important features.</p>
