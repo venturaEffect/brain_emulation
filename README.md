@@ -1,5 +1,8 @@
 # brain_emulation
 
+https://github.com/user-attachments/assets/ad9c1161-9aa5-4c51-8b5d-3e76dca33158
+
+
 An open, educational, and research-focused project for learning spiking neural networks (SNNs) through interactive lessons and visualization—progressing toward abstract brain emulation concepts and long-term exploration of digital brain emulation.
 
 - **Audience**: researchers, neuroengineers, cognitive scientists, students, and hobbyists
