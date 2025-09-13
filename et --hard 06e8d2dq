@@ -1,0 +1,40 @@
+3079f75 Sat Sep 13 14:08:48 2025 | Merge branch 'main' of https://github.com/venturaEffect/brain_emulation
+8961f19 Sat Sep 13 12:52:44 2025 | Fix preview image link in README
+0917b04 Sat Sep 13 12:31:21 2025 | Update README to include GIF preview instead of video
+0336380 Sat Sep 13 12:30:49 2025 | Embed video in README for enhanced presentation
+bc1bff0 Sat Sep 13 12:28:24 2025 | Change YouTube channel image source
+a79811d Sat Sep 13 12:27:08 2025 | Add YouTube channel section to README
+3a67636 Sat Sep 13 12:19:14 2025 | Update README to remove video embed and add asset link
+75d7886 Sat Sep 13 12:18:47 2025 | Update video source link in README.md
+ae768fd Sat Sep 13 12:17:55 2025 | Fix video source link in README.md
+3e615d8 Sat Sep 13 12:15:50 2025 | Include video demonstration in README
+a5e4b0d Sat Sep 13 12:13:36 2025 | Update README with project assets link
+06e8d2d Fri Sep 12 22:58:33 2025 | Fix UI styles for controls panel and sliders; adjust positioning and add z-index for better visibility
+81171d9 Fri Sep 12 22:39:10 2025 | Revert "Refactor CSS and JavaScript for improved layout and tooltip functionality"
+2c07884 Fri Sep 12 22:32:13 2025 | Refactor CSS and JavaScript for improved layout and tooltip functionality
+3869082 Fri Sep 12 22:03:03 2025 | Enhance tooltip positioning logic; improve visibility and boundary checks for better user experience
+56e2f74 Thu Sep 11 22:57:25 2025 | Refactor tooltip positioning and visibility; enhance user interaction and prevent overflow issues
+3c5ec8b Thu Sep 11 20:47:55 2025 | Fix tooltip positioning and overflow issues; enhance user experience and visibility
+acae092 Thu Sep 11 18:16:03 2025 | Merge branch 'main' of https://github.com/venturaEffect/brain_emulation
+8f903ef Thu Sep 11 18:16:01 2025 | Add parameter info tooltips for network controls; enhance user guidance and interaction
+4366f74 Thu Sep 11 18:10:56 2025 | Add GitHub Sponsors username to FUNDING.yml
+3f76636 Thu Sep 11 17:56:09 2025 | Fix tooltip positioning and overflow issues for info icons and buttons; enhance visibility and stability
+9fce190 Thu Sep 11 17:51:38 2025 | Enhance tooltip functionality with fixed positioning and improved styles for info icons and buttons
+cd37a2f Thu Sep 11 17:50:19 2025 | Add tooltips to network controls and buttons for enhanced user guidance
+f2c550d Thu Sep 11 17:44:36 2025 | Increase neuron cluster radius and separation for improved spacing in 3D visualization
+ab09abd Thu Sep 11 17:41:09 2025 | Enhance neuron rendering by updating border style to solid and adjusting color opacity; improve line width for better visibility
+a38b92e Thu Sep 11 17:38:24 2025 | Refactor neuron rendering to use square shapes instead of circles; enhance visibility with borders and ID display
+a07913d Thu Sep 11 17:35:00 2025 | Refactor lesson display to inject HTML content directly, eliminating file fetching and enhancing error handling
+42b8ac3 Thu Sep 11 17:31:12 2025 | Refactor lesson loading to improve logging and directly inject HTML content without parsing
+450df16 Thu Sep 11 17:27:30 2025 | Add new lessons on network topology, inhibition, multi-layer processing, memory systems, large-scale networks, neural oscillations, brain emulation theory, and ethics; enhance lesson loading with improved logging and direct HTML injection
+e5558e6 Thu Sep 11 17:21:29 2025 | Update .gitignore to include COMPLETE_LESSON_DISPLAY_FIX.md and LESSON_DISPLAY_FIX.js; enhance lesson loading with improved logging and error handling in SNNVisualizer
+7afa753 Thu Sep 11 15:30:14 2025 | Update .gitignore to include mindtransfer_me_banner.png and ensure FINAL_CONTENT_FIX.md is listed
+e786699 Thu Sep 11 13:28:06 2025 | Add new lessons on network topology, inhibition, multi-layer processing, memory systems, large-scale networks, neural oscillations, brain emulation theory, and ethics
+4a29b84 Thu Sep 11 13:22:14 2025 | Update .gitignore to include FINAL_CONTENT_FIX.md and ensure EMERGENCY_FIX.md is listed
+08bb63d Thu Sep 11 13:03:55 2025 | Add new lessons on network topology, inhibition, multi-layer processing, memory systems, and brain emulation ethics
+caa6204 Thu Sep 11 12:56:14 2025 | Update documentation and lesson files; add project analysis, status, and new lessons on network topology and inhibition
+23b07d2 Thu Sep 11 01:16:33 2025 | Add lessons 7, 8, and 9 on multi-layer processing, memory systems, and large-scale brain networks
+059f8a6 Thu Sep 11 01:09:47 2025 | Add lessons on ethics, network topology, and inhibition in neural networks
+05ddb68 Thu Sep 11 00:54:31 2025 | Refactor neuron initialization and connection logic for improved clustering; adjust firing rate and voltage dynamics for enhanced simulation behavior
+632823b Thu Sep 11 00:43:44 2025 | Enhance neuron visualization by tracking recent activity and clustering; improve connection rendering based on cluster activity
+29166a7 Thu Sep 11 00:36:24 2025 | Enhance neuron behavior by increasing firing rate and connection weights; improve connection rendering logic for better visualization
