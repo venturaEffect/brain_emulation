@@ -109,9 +109,10 @@ What if your mind could live forever?
 This is your guide to the science of digital immortality. We explore the monumental quest to upload human consciousness, breaking down the incredible breakthroughs in neuroscience, AI, and engineering that could redefine our future.
 
 <a href="https://www.youtube.com/@mindtransfer_me" target="_blank" rel="noopener">
-  <img src="https://img.youtube.com/vi/VIDEO_ID/hqdefault.jpg" alt="Mindtransfer.me YouTube Channel"/>
+  <img src="https://github.com/user-attachments/assets/01fe8e9b-2bc8-41ca-856f-713bb45c5d29" alt="Mindtransfer.me YouTube Channel"/>
 </a>
 
 ## License
+
 
 Open source—see [LICENSE](./LICENSE).
