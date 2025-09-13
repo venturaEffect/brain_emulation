@@ -102,6 +102,16 @@ This project builds on current research from leading institutions:
 
 Our lesson progression follows established neuroscience principles while maintaining accessibility for learners at all levels.
 
+## YouTube Channel
+
+What if your mind could live forever?
+
+This is your guide to the science of digital immortality. We explore the monumental quest to upload human consciousness, breaking down the incredible breakthroughs in neuroscience, AI, and engineering that could redefine our future.
+
+<a href="https://www.youtube.com/@mindtransfer_me" target="_blank" rel="noopener">
+  <img src="https://img.youtube.com/vi/VIDEO_ID/hqdefault.jpg" alt="Mindtransfer.me YouTube Channel"/>
+</a>
+
 ## License
 
 Open source—see [LICENSE](./LICENSE).
