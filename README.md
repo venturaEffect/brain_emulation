@@ -1,7 +1,9 @@
 # brain_emulation
 
-https://github.com/user-attachments/assets/ad9c1161-9aa5-4c51-8b5d-3e76dca33158
-
+<video autoplay muted loop playsinline width="720" height="405">
+  <source src="[https://github.com/YourUser/YourRepo/assets/1234567/your-video.mp4](https://github.com/user-attachments/assets/ad9c1161-9aa5-4c51-8b5d-3e76dca33158)" type="video/mp4">
+  Your browser does not support the video tag.
+</video>
 
 An open, educational, and research-focused project for learning spiking neural networks (SNNs) through interactive lessons and visualization—progressing toward abstract brain emulation concepts and long-term exploration of digital brain emulation.
 
