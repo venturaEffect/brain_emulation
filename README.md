@@ -1,5 +1,7 @@
 # brain_emulation
 
+https://github.com/user-attachments/assets/36abffbb-98aa-4ab7-b494-ebbbb6697811
+
 An open, educational, and research-focused project for learning spiking neural networks (SNNs) through interactive lessons and visualization—progressing toward abstract brain emulation concepts and long-term exploration of digital brain emulation.
 
 - **Audience**: researchers, neuroengineers, cognitive scientists, students, and hobbyists
@@ -100,6 +102,17 @@ This project builds on current research from leading institutions:
 
 Our lesson progression follows established neuroscience principles while maintaining accessibility for learners at all levels.
 
+## YouTube Channel
+
+What if your mind could live forever?
+
+This is your guide to the science of digital immortality. We explore the monumental quest to upload human consciousness, breaking down the incredible breakthroughs in neuroscience, AI, and engineering that could redefine our future.
+
+<a href="https://www.youtube.com/@mindtransfer_me" target="_blank" rel="noopener">
+  <img src="https://github.com/user-attachments/assets/01fe8e9b-2bc8-41ca-856f-713bb45c5d29" alt="Mindtransfer.me YouTube Channel"/>
+</a>
+
 ## License
+
 
 Open source—see [LICENSE](./LICENSE).
